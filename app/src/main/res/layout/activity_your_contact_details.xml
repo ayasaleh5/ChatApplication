@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    tools:context=".YourContactDetailsActivity">
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/progressbar"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="256dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="150dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="23.2dp"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="35dp"
+                    android:letterSpacing="0.0325"
+                    android:text="@string/name"
+                    android:textColor="#464646"
+                    android:textSize="16.7sp" />
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginBottom="13.5dp"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/enter_your_name"
+                    android:letterSpacing="0.0325"
+                    android:textColor="#464646"
+                    android:textSize="14.3sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:background="#b6b6b6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15.5dp"
+                    android:letterSpacing="0.0325"
+                    android:text="@string/mobile_number"
+                    android:textColor="#464646"
+                    android:textSize="16.7sp" />
+
+                <TextView
+                    android:id="@+id/user_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginBottom="13.5dp"
+                    android:background="@android:color/transparent"
+                    android:hint="9821052454"
+                    android:letterSpacing="0.0325"
+                    android:textColor="#464646"
+                    android:textSize="12.3sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:background="#b6b6b6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15.5dp"
+                    android:letterSpacing="0.0325"
+                    android:text="@string/email"
+                    android:textColor="#464646"
+                    android:textSize="16.7sp" />
+
+                <EditText
+                    android:id="@+id/user_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginBottom="13.5dp"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/enter_your_email"
+                    android:letterSpacing="0.0325"
+                    android:textColor="#464646"
+                    android:textSize="12.3sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:background="#b6b6b6" />
+
+                <TextView
+                    android:id="@+id/tv_updateuserdetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="45dp"
+                    android:background="@drawable/btn_bg"
+                    android:paddingTop="16.3dp"
+                    android:paddingBottom="16.3dp"
+                    android:text="@string/submit"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
