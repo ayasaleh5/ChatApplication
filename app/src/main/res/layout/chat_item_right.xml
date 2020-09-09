@@ -8,9 +8,7 @@
     <RelativeLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-       >
+        android:layout_alignParentEnd="true">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="wrap_content"
@@ -19,25 +17,21 @@
         android:visibility="gone"/>
 
         <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
             android:id="@+id/messageIv"
-            android:src="@drawable/ic_action_name"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/background_right"
-
             android:adjustViewBounds="true"
-            android:padding="15dp"
+            android:background="@drawable/background_right"
             android:scaleType="fitCenter"
-            />
+            android:src="@drawable/ic_action_name" />
 
         <TextView
             android:id="@+id/show_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_toStartOf="@+id/messageIv"
             android:background="@drawable/background_right"
             android:padding="8dp"

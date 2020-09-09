@@ -1,21 +1,20 @@
 package com.example.chatapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.os.Handler;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapplication.Model.UsersData;
@@ -34,9 +33,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,6 +55,13 @@ private CircleImageView profileImageView;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        tvname = findViewById(R.id.tvname);
+        profileImageView = findViewById(R.id.profile_image6);
+        Toolbar toolbar = findViewById(R.id.toolBar3);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Settings");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> startActivity(new Intent(SettingActivity.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)));
 
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -65,11 +71,17 @@ private CircleImageView profileImageView;
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 UsersData user = datasnapshot.getValue(UsersData.class);
+                assert user != null;
                 tvname.setText(user.getUsername());
-                if (user.getImageUrl().equals("default")){
+                if (user.getImageUrl().equals("default")) {
                     profileImageView.setImageResource(R.mipmap.ic_launcher);
-                }else {
-                    Glide.with(SettingActivity.this).load(user.getImageUrl()).into(profileImageView);
+
+                } else {
+                    //vip about profile fragment
+                    if(!(SettingActivity.this).isFinishing())
+                        Glide.with(SettingActivity.this).load(user.getImageUrl()).into(profileImageView);
+
+
                 }
             }
 
@@ -79,22 +91,16 @@ private CircleImageView profileImageView;
             }
         });
 
-        btSave.setOnClickListener(new View.OnClickListener() {
+        profileImageView.setOnClickListener(v -> new Handler().postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        profileImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            public void run() {
                 openImage();
-            }
-        });
 
+            }
+        },2000));
 
     }
+
 
     private void openImage() {
         Intent intent = new Intent();
@@ -107,65 +113,80 @@ private CircleImageView profileImageView;
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
+
+
     private void uploadImage(){
-        final ProgressDialog pd = new ProgressDialog(getApplicationContext());
+        new Handler().postDelayed(() -> {
+
+
+    //checking if file is available
+    if (imageUri !=null){
+        //displaying progress dialog while image is uploading
+        final ProgressDialog pd = new ProgressDialog(SettingActivity.this);
         pd.setMessage("Uploading");
-        pd.show();
-        if (imageUri !=null){
-            final StorageReference fileReferance = storageReference.child(System.currentTimeMillis()
-            + "."+getFileExtention(imageUri));
+       pd.show();
+        //getting the storage reference
+        final StorageReference fileReferance = storageReference.child(System.currentTimeMillis()
+                + "."+getFileExtention(imageUri));
 
-            uploadTask = fileReferance.getFile(imageUri);
-            uploadTask.continueWith(new Continuation <UploadTask.TaskSnapshot,Task<Uri>> () {
-                @Override
-                public Task<Uri> then (@NonNull Task <UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()){
-                        throw task.getException();
-                    }
-
-                    return fileReferance.getDownloadUrl();
+        //adding the file to reference
+        uploadTask = fileReferance.putFile(imageUri);
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then (@NonNull Task <UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    throw task.getException();
                 }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()){
-                        Uri downloadUri = task.getResult();
-                        String mUri = downloadUri.toString();
 
-                        reference = FirebaseDatabase.getInstance().getReference("appusers").child(fuser.getUid());
-                        HashMap<String,Object>map = new HashMap<>();
-                        map.put("imageUrl",mUri);
-                        reference.updateChildren(map);
-                        pd.dismiss();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Faild", Toast.LENGTH_SHORT).show();
-                        pd.dismiss();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                return fileReferance.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    Uri downloadUri = task.getResult();
+                    String mUri = downloadUri.toString();
+
+                    reference = FirebaseDatabase.getInstance().getReference("appusers").child(fuser.getUid());
+                    HashMap<String,Object> map = new HashMap<>();
+                    map.put("imageUrl",mUri);
+                    Task<Void> voidTask = reference.updateChildren(map);
+                    pd.dismiss();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Faild", Toast.LENGTH_SHORT).show();
                     pd.dismiss();
                 }
-            });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                pd.dismiss();
+            }
+        });
 
-            } else {
-            Toast.makeText(getApplicationContext(), "No image selected", Toast.LENGTH_SHORT).show();
-        }
-        }
+    } else {
+        Toast.makeText(getApplicationContext(), "No image selected", Toast.LENGTH_SHORT).show();
+    }
+        },2000);
+    }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK
-        && data !=null && data.getData() !=null){
+                && data !=null && data.getData() !=null){
             imageUri = data.getData();
-
+            if (uploadTask !=null && uploadTask.isInProgress()){
+                Toast.makeText(getApplicationContext(), "Upload is in progress", Toast.LENGTH_SHORT).show();
+            } else {
+                uploadImage();
+            }
 
         }
 
     }
+
 }
 
 

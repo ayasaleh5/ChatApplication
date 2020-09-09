@@ -6,14 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".SettingActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolBar3"
+        android:background="@color/colorPrimaryDark"
+        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/MenuStyle">
 
+    </androidx.appcompat.widget.Toolbar>
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image6"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:src="@mipmap/ic_launcher">
 
     </de.hdodenhof.circleimageview.CircleImageView>
@@ -21,12 +28,12 @@
         android:id="@+id/tvname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:gravity="center"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="15dp"
         android:inputType="text"
+        android:textSize="35sp"
         android:layout_below="@+id/profile_image6"
-        />
+        tools:ignore="TextViewEdits" />
 
 
 

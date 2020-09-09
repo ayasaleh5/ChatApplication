@@ -16,4 +16,12 @@
     <string name="submit">Submit</string>
     <string name="hello">hello</string>
     <string name="user_name">User Name</string>
+    <string name="hello_there_welcome_back">Hello there, Welcome Back</string>
+    <string name="phone_number">Phone number</string>
+    <string name="send">Send</string>
+    <string name="_9821052454">9821052454</string>
+    <string name="todo">TODO</string>
+    <string name="done">Done</string>
+    <string name="add">Add</string>
+    <string name="type_a_message">Type a message...</string>
 </resources>

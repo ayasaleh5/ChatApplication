@@ -19,9 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapplication.Fragments.ChatFragment;
-import com.example.chatapplication.Fragments.ProfileFragment;
 import com.example.chatapplication.Fragments.UsersFragment;
-import com.example.chatapplication.Model.AppUser;
 import com.example.chatapplication.Model.UsersData;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
 
         userName = findViewById(R.id.tvusername);
@@ -64,45 +63,42 @@ public class ProfileActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    reference = FirebaseDatabase.getInstance().getReference("appusers").child(user.getUid());
-                    reference.addValueEventListener(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            UsersData userData = snapshot.getValue(UsersData.class);
-                                                            userName.setText(userData.getUsername());
-                                                            String name = userData.getUsername();
-                                                            if (userData.getImageUrl().equals("default")){
-                                                                profile_image.setImageResource(R.mipmap.ic_launcher);
-                                                            } else {
-                                                                if (!(ProfileActivity.this).isFinishing()) {
-                                                                    Glide.with(ProfileActivity.this).load(userData.getImageUrl()).into(profile_image);
-                                                                }
+        mAuthListener = firebaseAuth -> {
+            user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                reference = FirebaseDatabase.getInstance().getReference("appusers").child(user.getUid());
+                reference.addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        UsersData userData = snapshot.getValue(UsersData.class);
+                                                        userName.setText(userData.getUsername());
+                                                        String name = userData.getUsername();
+                                                        if (userData.getImageUrl().equals("default")){
+                                                            profile_image.setImageResource(R.mipmap.ic_launcher);
+                                                        } else {
+                                                            if (!(ProfileActivity.this).isFinishing()) {
+                                                                Glide.with(ProfileActivity.this).load(userData.getImageUrl()).into(profile_image);
                                                             }
-
                                                         }
 
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError error) {
-                                                            Toast.makeText(ProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
 
-                                                        }
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                        Toast.makeText(ProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                                    });
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                    Intent intent = new Intent(ProfileActivity.this, StartActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-                // ...
+                                                    }
+
+                                                });
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+            } else {
+                Log.d(TAG, "onAuthStateChanged:signed_out");
+                Intent intent = new Intent(ProfileActivity.this, StartActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
+            // ...
         };
 
        TabLayout tabLayout = findViewById(R.id.tab_layout);
@@ -110,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new ChatFragment(), "Chats");
         viewPagerAdapter.addFragment(new UsersFragment(), "Users");
-        viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
+     //   viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
 
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -125,18 +121,16 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(ProfileActivity.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                finish();
-                return true;
+        if (item.getItemId() == R.id.logout) {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(ProfileActivity.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            finish();
+            return true;
         }
-        switch (item.getItemId()) {
-            case R.id.settings:
-                startActivity(new Intent(ProfileActivity.this, ProfileFragment.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                finish();
-                return true;
+        if (item.getItemId() == R.id.settings) {
+            startActivity(new Intent(ProfileActivity.this, SettingActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+            return true;
         }
 
         return false;
@@ -193,6 +187,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void status(String status){
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
+        assert firebaseUser != null;
         reference = FirebaseDatabase.getInstance().getReference("appusers").child(firebaseUser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();

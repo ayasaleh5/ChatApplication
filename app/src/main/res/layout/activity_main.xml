@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
@@ -12,82 +11,57 @@ android:padding="20dp">
 
     <ImageView
         android:id="@+id/logo_image"
-        android:layout_width="198dp"
-        android:layout_height="122dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="60dp"
-        android:src="@drawable/logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        android:layout_width="117dp"
+        android:layout_height="117dp"
+        android:layout_marginStart="129dp"
+        android:layout_marginTop="136dp"
+        android:src="@drawable/logo"/>
     <TextView
         android:id="@+id/logo_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello there,"
-        android:textColor="#000"
-        android:textSize="30sp"
+        android:layout_width="272dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="296dp"
+        android:text="@string/hello_there_welcome_back"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp"
         android:transitionName="logo_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_image" />
-    <TextView
-        android:id="@+id/logo_name2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome Back"
-        android:textColor="#000"
-        android:textSize="30sp"
-        android:transitionName="logo_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_name" />
-
-    <TextView
-        android:id="@+id/slogan_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Sign In to continue"
-        android:textSize="18sp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_name2" />
+       />
 
     <EditText
         android:id="@+id/etPhone1"
-        android:layout_width="match_parent"
+        android:layout_width="187dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/edit_bg"
-        android:hint="Phone"
+        android:layout_marginTop="368dp"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:hint="@string/phone_number"
         android:inputType="number"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slogan_name" />
+         />
+
     <Spinner
         android:id="@+id/spinner3"
-        android:layout_width="0dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPhone1" />
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="420dp"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/btLogIn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_width="236dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="71dp"
+        android:layout_marginTop="470dp"
         android:background="@drawable/btn_bg"
-        android:text="Sign in"
+        android:text="@string/send"
+        android:textAllCaps="false"
         android:textColor="#fff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner3" />
+       />
 
 
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

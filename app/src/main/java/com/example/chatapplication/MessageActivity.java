@@ -1,19 +1,8 @@
 package com.example.chatapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,12 +14,21 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapplication.Adapter.MessageAdapter;
@@ -42,7 +40,6 @@ import com.example.chatapplication.Notifications.Data;
 import com.example.chatapplication.Notifications.MyResponse;
 import com.example.chatapplication.Notifications.Sender;
 import com.example.chatapplication.Notifications.Token;
-import com.example.chatapplication.SinchCall.SinchService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -60,18 +57,16 @@ import com.google.firebase.storage.UploadTask;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.SinchClientListener;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallListener;
-import com.sinch.android.rtc.video.VideoCallListener;
-import com.sinch.android.rtc.video.VideoController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -124,14 +119,9 @@ public class MessageActivity extends AppCompatActivity {
         imageIv = findViewById(R.id.messageIv);
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MessageActivity.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> startActivity(new Intent(MessageActivity.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)));
         apiService = Client.getClient("https://fcm.googleapis.com/").create(ApiService.class);
 
         recyclerView = findViewById(R.id.recycler_view);
@@ -149,39 +139,49 @@ public class MessageActivity extends AppCompatActivity {
         cameraPermissions = new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         audioPermissions = new String[]{Manifest.permission.RECORD_AUDIO};
-
-
         intent = getIntent();
         final String userid = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-        btn_attach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 showImagePickDialog();
+
+        sinchClient = Sinch.getSinchClientBuilder()
+                .context(this)
+                .applicationKey("de3b3bf6-fff6-4d40-9c25-ba9b848861e2")
+                .applicationSecret("B7u+d2DqnEuUU5JNjN2uJw==")
+                .environmentHost("clientapi.sinch.com")
+                .userId(fuser.getUid())
+                .build();
+        sinchClient.setSupportActiveConnectionInBackground(true);
+        sinchClient.startListeningOnActiveConnection();
+        sinchClient.setSupportCalling(true);
+        sinchClient.getCallClient().addCallClientListener(new sinchCallClientListener()
+        {
+
+
+        });
+        sinchClient.start();
+
+        btn_attach.setOnClickListener(v -> showImagePickDialog());
+
+        btn_send.setOnClickListener(v -> {
+            notify = true;
+            String msg = text_send.getText().toString();
+            if (!msg.equals("")){
+                sendMessage(fuser.getUid(),userid,msg);
+            }else {
+                Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
             }
+            text_send.setText("");
         });
 
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notify = true;
-                String msg = text_send.getText().toString();
-                if (!msg.equals("")){
-                    sendMessage(fuser.getUid(),userid,msg);
-                }else {
-                    Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
-                }
-                text_send.setText("");
-            }
-        });
 
-
+        assert userid != null;
         reference = FirebaseDatabase.getInstance().getReference("appusers").child(userid);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UsersData usersData = snapshot.getValue(UsersData.class);
+                assert usersData != null;
                 username.setText(usersData.getUsername());
                 if(usersData.getImageUrl().equals("default")){
                     profile_image.setImageResource(R.mipmap.ic_launcher);
@@ -203,6 +203,8 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.message_menu_bar,menu);
@@ -215,7 +217,7 @@ public class MessageActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.call_button:
-                openCallingActivity();
+                callUser();
                 break;
             case R.id.video_call:
                 //openVideoCallingActivity();
@@ -223,13 +225,30 @@ public class MessageActivity extends AppCompatActivity {
         }
         return true;
     }
-    private void openCallingActivity()
-    {
 
-        Intent jumptocall= new Intent(MessageActivity.this,CallingActivity.class);
-        final String userid = intent.getStringExtra("userid");
-        jumptocall.putExtra("Userid", userid);
-        startActivity(jumptocall);
+
+    private void callUser()
+    {
+        if (call==null){
+            final String userid = intent.getStringExtra("userid");
+             call =sinchClient.getCallClient().callUser(userid);
+             call.addCallListener(new SinchCallListener());
+            openCallerDialog(call);
+        }
+    }
+    private void openCallerDialog(final com.sinch.android.rtc.calling.Call call){
+        AlertDialog alertDialogCall = new AlertDialog.Builder(MessageActivity.this).create();
+        alertDialogCall.setTitle("Alert");
+        alertDialogCall.setMessage("Calling");
+        alertDialogCall.setButton(AlertDialog.BUTTON_NEUTRAL, "Hang up", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                call.hangup();
+            }
+        });
+        alertDialogCall.show();
+
     }
 
    /*private void openVideoCallingActivity()
@@ -289,6 +308,7 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat  = snapshot.getValue(Chat.class);
 
+                    assert chat != null;
                     if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userId)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isseen", true);
@@ -318,6 +338,7 @@ public class MessageActivity extends AppCompatActivity {
         final String userid = intent.getStringExtra("userid");
         //Add user to chat fragment
 
+        assert userid != null;
         final DatabaseReference chatref = FirebaseDatabase.getInstance().getReference("chatlist")
                 .child(fuser.getUid())
                 .child(userid);
@@ -573,76 +594,145 @@ public class MessageActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+                    }
         }
+
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void sendImageMessage(Uri image_uri) throws IOException {
-        notify= true;
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+    private void sendImageMessage(Uri image_uri) throws IOException{
+        new Thread(new Runnable() {
+        @Override
+        public void run() { runOnUiThread(new Runnable() {
+                @Override
+                public void run() { notify= true;
+        final ProgressDialog progressDialog = new ProgressDialog(MessageActivity.this);
         progressDialog.setMessage("Sending image...");
         progressDialog.show();
         String timeStamp = ""+ System.currentTimeMillis();
         String fileNamePath = "ChatImages/"+"post_"+timeStamp;
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(MessageActivity.this.getContentResolver(),image_uri);
+                    } catch (IOException e) { e.printStackTrace(); }  //your code or your request that you want to run on uiThread
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+                        byte[] data = baos.toByteArray();
+                        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNamePath);
+                        ref.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        //image uploaded
+                                        progressDialog.dismiss();
+                                        //get url to upload image
+                                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                                        while (!uriTask.isSuccessful());
+                                        String downloadUri = uriTask.getResult().toString();
+                                        if (uriTask.isSuccessful()){
 
-        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),image_uri);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
-        byte[] data = baos.toByteArray();
-        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNamePath);
-        ref.putBytes(data)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        //image uploaded
-                        progressDialog.dismiss();
-                        //get url to upload image
-                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!uriTask.isSuccessful());
-                        String downloadUri = uriTask.getResult().toString();
-                        if (uriTask.isSuccessful()){
+                                            final String userid1 = intent.getStringExtra("userid");
+                                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                                            HashMap<String, Object> hashMap2 = new HashMap<>();
+                                            hashMap2.put("sender",fuser.getUid());
+                                            hashMap2.put("receiver",userid1);
+                                            hashMap2.put("message",downloadUri);
+                                            hashMap2.put("type","image");
 
-                            final String userid1 = intent.getStringExtra("userid");
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                            HashMap<String, Object> hashMap2 = new HashMap<>();
-                            hashMap2.put("sender",fuser.getUid());
-                            hashMap2.put("receiver",userid1);
-                            hashMap2.put("message",downloadUri);
-                            hashMap2.put("type","image");
-
-                            databaseReference.child("chats").push().setValue(hashMap2);
+                                            databaseReference.child("chats").push().setValue(hashMap2);
 
 
-                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("appusers").child(fuser.getUid());
-                            database.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                                    UsersData usersData = datasnapshot.getValue(UsersData.class);
-                                     if (notify){
-                                        sendNotifiaction(userid1,usersData.getUsername(),"Sent you a photo");
+                                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("appusers").child(fuser.getUid());
+                                            database.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                                                    UsersData usersData = datasnapshot.getValue(UsersData.class);
+                                                    if (notify){
+                                                        sendNotifiaction(userid1,usersData.getUsername(),"Sent you a photo");
+                                                    }
+                                                    notify = false;
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+
+
+                                        }
+
                                     }
-                                    notify = false;
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-
-
-                        }
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                    }
+                                });
                     }
                 });
+            }
+        }).start();
+
     }
 
+    private class SinchCallListener implements CallListener{
+
+        @Override
+        public void onCallProgressing(com.sinch.android.rtc.calling.Call call) {
+            Toast.makeText(MessageActivity.this, "Call Progressing", Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onCallEstablished(com.sinch.android.rtc.calling.Call call) {
+            Toast.makeText(MessageActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCallEnded(com.sinch.android.rtc.calling.Call endedcall) {
+            Toast.makeText(MessageActivity.this, "Call Ended", Toast.LENGTH_SHORT).show();
+            call = null;
+            endedcall.hangup();
+            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+
+
+
+        }
+
+        @Override
+        public void onShouldSendPushNotification(com.sinch.android.rtc.calling.Call call, List<PushPair> list) {
+
+        }
+    }
+    private class sinchCallClientListener implements CallClientListener {
+
+
+        @Override
+        public void onIncomingCall(CallClient callClient, final com.sinch.android.rtc.calling.Call incomingcall) {
+            AlertDialog alertDialog = new AlertDialog.Builder(MessageActivity.this).create();
+            alertDialog.setTitle("Calling");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "REJECT", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    call.hangup();
+                }
+            });
+
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Pick", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    call = incomingcall;
+                    call.answer();
+                    call.addCallListener(new SinchCallListener());
+                    Toast.makeText(getApplicationContext(), "Call is Started", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            alertDialog.show();
+
+        }
+    }
 }
 
