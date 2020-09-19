@@ -3,7 +3,7 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
 
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.9.7'
-    implementation(name: 'sinch-android-rtc', version: '3.17.4', ext: 'aar')
+    implementation(name: 'sinch-android-rtc', version: '+', ext: 'aar')
     implementation 'com.android.support:multidex:1.0.3'
 
 
