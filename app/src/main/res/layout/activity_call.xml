@@ -160,14 +160,14 @@
     android:orientation="horizontal"
     android:layout_weight="0.5">
 
-        <com.dd.ShadowLayout
-             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:sl_shadowRadius="6dp"
-            app:sl_shadowColor="#FF4D53"
-            app:sl_dx="0dp"
-            app:sl_dy="0dp"
-            app:sl_cornerRadius="56dp">
+<!--        <com.dd.ShadowLayout-->
+<!--             android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:sl_shadowRadius="6dp"-->
+<!--            app:sl_shadowColor="#FF4D53"-->
+<!--            app:sl_dx="0dp"-->
+<!--            app:sl_dy="0dp"-->
+<!--            app:sl_cornerRadius="56dp">-->
         <ImageButton
     android:id="@+id/btnEndCall"
     android:layout_width="120dp"
@@ -175,16 +175,16 @@
     android:src="@drawable/ic_off"
         android:background="@drawable/bg_endcall"
          />
-        </com.dd.ShadowLayout>
+<!--        </com.dd.ShadowLayout>-->
 
-        <com.dd.ShadowLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:sl_shadowRadius="6dp"
-            app:sl_shadowColor="#4CAF50"
-            app:sl_dx="0dp"
-            app:sl_dy="0dp"
-            app:sl_cornerRadius="56dp">
+<!--        <com.dd.ShadowLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:sl_shadowRadius="6dp"-->
+<!--            app:sl_shadowColor="#4CAF50"-->
+<!--            app:sl_dx="0dp"-->
+<!--            app:sl_dy="0dp"-->
+<!--            app:sl_cornerRadius="56dp">-->
     <ImageButton
     android:id="@+id/btnStartCall"
         android:layout_width="120dp"
@@ -192,7 +192,7 @@
         android:background="@drawable/bg_startcall"
         android:src="@drawable/ic_startcall"
     android:layout_marginLeft="50dp"/>
-        </com.dd.ShadowLayout>
+<!--        </com.dd.ShadowLayout>-->
     </LinearLayout>
 
 </LinearLayout>

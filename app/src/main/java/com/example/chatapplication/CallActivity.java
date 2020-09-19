@@ -3,7 +3,6 @@ package com.example.chatapplication;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -40,9 +38,7 @@ import com.sinch.android.rtc.calling.CallState;
 import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -113,9 +109,7 @@ finish();
                 text_number = getIntent().getStringExtra("call_video");
                 is_video = true;
             } else if (getIntent().hasExtra("user_number")) {
-                Map<String, String> map = new HashMap<>();
 
-//                text_number = user.getName();
                 call = callClient.callUser(getIntent().getStringExtra("user_number"));
                 System.out.println("calling " + getIntent().getStringExtra("user_number"));
             } else if (getIntent().hasExtra("INCOMING_CALL")) {
@@ -333,32 +327,32 @@ finish();
             call.hangup();
             call = null;
         }
-        if (time > 0) {
-            String cost = "";
-            if (orginalGlobalCredit > 0)
-                cost = "$" + String.format("%.5f", orginalGlobalCredit - globalCredit);
-            else if (orginalSubscription > 0)
-                cost = String.valueOf(orginalSubscription - subscription) + " units";
-            else if (orginalCredit > 0)
-                cost = "$" + String.format("%.5f", orginalCredit - credit);
-
-
-            int seconds = time % 60;
-            int minutes = time / 60;
-            String msg = "Call cost: " + cost + "\n" + "Duration: " + (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
-            AlertDialog alertDialog = new AlertDialog.Builder(CallActivity.this).create();
-            alertDialog.setTitle("Call ended");
-            alertDialog.setMessage(msg);
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            CallActivity.this.finish();
-                        }
-                    });
-            alertDialog.show();
-        } else
+//        if (time > 0) {
+//            String cost = "";
+//            if (orginalGlobalCredit > 0)
+//                cost = "$" + String.format("%.5f", orginalGlobalCredit - globalCredit);
+//            else if (orginalSubscription > 0)
+//                cost = String.valueOf(orginalSubscription - subscription) + " units";
+//            else if (orginalCredit > 0)
+//                cost = "$" + String.format("%.5f", orginalCredit - credit);
+//
+//
+//            int seconds = time % 60;
+//            int minutes = time / 60;
+//            String msg = "Call cost: " + cost + "\n" + "Duration: " + (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
+//            AlertDialog alertDialog = new AlertDialog.Builder(CallActivity.this).create();
+//            alertDialog.setTitle("Call ended");
+//            alertDialog.setMessage(msg);
+//            alertDialog.setCancelable(false);
+//            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                            CallActivity.this.finish();
+//                        }
+//                    });
+//            alertDialog.show();
+//        } else
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
