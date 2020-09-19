@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:weightSum="5"
+    android:background="#ffffffff"
+    >
+
+    <FrameLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.5"
+        >
+<!--<ImageView-->
+<!--    android:id="@+id/imageview_bg"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@drawable/ic_default_avatar"-->
+<!--    android:scaleType="centerCrop"-->
+<!--    android:foreground="@drawable/image_overlay"/>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+            <com.pkmmte.view.CircularImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/profile_image"
+                android:id="@+id/profilePhoto"
+                app:border="true"
+                app:border_color="#fff"
+                app:border_width="1dp"
+                app:shadow="false"
+                android:layout_margin="10dp"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/tvPhoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+2010"
+                android:layout_margin="10dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:id="@+id/tvCallStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Connecting"
+                android:textSize="16sp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                />
+
+
+
+        </LinearLayout>
+    </FrameLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/video_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:padding="0dip"
+        android:layout_weight="3"
+        android:background="@android:color/darker_gray" android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout android:id="@+id/remoteVideo" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" android:orientation="horizontal"/>
+
+        <RelativeLayout android:id="@+id/localVideo" android:layout_width="150dp"
+            android:layout_alignParentRight="true" android:layout_height="200dp"
+            android:layout_alignParentTop="true" />
+
+    </RelativeLayout>
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="2"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+
+        android:layout_marginTop="30dp">
+
+        <ToggleButton
+            android:id="@+id/btnSpeaker"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/speaker"
+
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:textOn=""
+            android:textOff=""
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            />
+
+
+    </LinearLayout>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        >-->
+
+<!--        <ToggleButton-->
+<!--            android:id="@+id/btnVideo"-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:background="@drawable/videocall"-->
+<!--            android:layout_marginStart="30dp"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            android:textOn=""-->
+<!--            android:textOff=""-->
+<!--            android:focusable="false"-->
+<!--            android:focusableInTouchMode="false"-->
+<!--            />-->
+<!--        <RelativeLayout-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginEnd="20dp">-->
+
+<!--        </RelativeLayout>-->
+
+
+
+<!--    </LinearLayout>-->
+
+
+</LinearLayout>
+
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal|bottom"
+    android:orientation="horizontal"
+    android:layout_weight="0.5">
+
+        <com.dd.ShadowLayout
+             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:sl_shadowRadius="6dp"
+            app:sl_shadowColor="#FF4D53"
+            app:sl_dx="0dp"
+            app:sl_dy="0dp"
+            app:sl_cornerRadius="56dp">
+        <ImageButton
+    android:id="@+id/btnEndCall"
+    android:layout_width="120dp"
+    android:layout_height="60dp"
+    android:src="@drawable/ic_off"
+        android:background="@drawable/bg_endcall"
+         />
+        </com.dd.ShadowLayout>
+
+        <com.dd.ShadowLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:sl_shadowRadius="6dp"
+            app:sl_shadowColor="#4CAF50"
+            app:sl_dx="0dp"
+            app:sl_dy="0dp"
+            app:sl_cornerRadius="56dp">
+    <ImageButton
+    android:id="@+id/btnStartCall"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_startcall"
+        android:src="@drawable/ic_startcall"
+    android:layout_marginLeft="50dp"/>
+        </com.dd.ShadowLayout>
+    </LinearLayout>
+
+</LinearLayout>

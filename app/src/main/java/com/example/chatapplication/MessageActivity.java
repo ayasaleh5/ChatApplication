@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -54,12 +53,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.sinch.android.rtc.PushPair;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.calling.CallClient;
-import com.sinch.android.rtc.calling.CallClientListener;
-import com.sinch.android.rtc.calling.CallListener;
+import com.sinch.android.rtc.SinchError;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -103,10 +97,11 @@ public class MessageActivity extends AppCompatActivity {
     String[] audioPermissions;
 
     Uri image_uri= null;
-    com.sinch.android.rtc.calling.Call call;
+//    com.sinch.android.rtc.calling.Call call;
 
-    SinchClient sinchClient;
+//    SinchClient sinchClient;
     ArrayList<UsersData> usersDataArrayList;
+//    private StartFailedListener mListener;
 
 
 
@@ -140,25 +135,23 @@ public class MessageActivity extends AppCompatActivity {
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         audioPermissions = new String[]{Manifest.permission.RECORD_AUDIO};
         intent = getIntent();
-        final String userid = intent.getStringExtra("userid");
+        userid = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        sinchClient = Sinch.getSinchClientBuilder()
-                .context(this)
-                .applicationKey("de3b3bf6-fff6-4d40-9c25-ba9b848861e2")
-                .applicationSecret("B7u+d2DqnEuUU5JNjN2uJw==")
-                .environmentHost("clientapi.sinch.com")
-                .userId(fuser.getUid())
-                .build();
-        sinchClient.setSupportActiveConnectionInBackground(true);
-        sinchClient.startListeningOnActiveConnection();
-        sinchClient.setSupportCalling(true);
-        sinchClient.getCallClient().addCallClientListener(new sinchCallClientListener()
-        {
-
-
-        });
-        sinchClient.start();
+//        sinchClient = Sinch.getSinchClientBuilder()
+//                .context(this)
+//                .applicationKey("de3b3bf6-fff6-4d40-9c25-ba9b848861e2")
+//                .applicationSecret("B7u+d2DqnEuUU5JNjN2uJw==")
+//                .environmentHost("clientapi.sinch.com")
+//                .userId(fuser.getUid())
+//                .build();
+//        sinchClient.setSupportCalling(true);
+//        sinchClient.setSupportActiveConnectionInBackground(true);
+//        sinchClient.startListeningOnActiveConnection();
+//        sinchClient.getCallClient().addCallClientListener(new sinchCallClientListener());
+//        sinchClient.addSinchClientListener(new MySinchClientListener());
+//
+//        sinchClient.start();
 
         btn_attach.setOnClickListener(v -> showImagePickDialog());
 
@@ -203,7 +196,18 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
     }
 
+    @Override
+    protected void onDestroy() {
+//        if (sinchClient != null && sinchClient.isStarted()) {
+//            sinchClient.terminate();
+//        }
+        super.onDestroy();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -217,25 +221,31 @@ public class MessageActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.call_button:
-                callUser();
+//                callUser();
+                Intent call_intent= new Intent(this, CallActivity.class);
+                call_intent.putExtra("user_number", String.valueOf(userid));
+                startActivity(call_intent);
                 break;
             case R.id.video_call:
                 //openVideoCallingActivity();
+                Intent video_call_intent= new Intent(this, CallActivity.class);
+                video_call_intent.putExtra("call_video", userid);
+                 startActivity(video_call_intent);
                 break;
         }
         return true;
     }
 
 
-    private void callUser()
-    {
-        if (call==null){
-            final String userid = intent.getStringExtra("userid");
-             call =sinchClient.getCallClient().callUser(userid);
-             call.addCallListener(new SinchCallListener());
-            openCallerDialog(call);
-        }
-    }
+//    private void callUser()
+//    {
+//        if (call==null){
+//             System.out.println("LOOOOOG userid="+userid);
+//             call =sinchClient.getCallClient().callUser(userid);
+//             call.addCallListener(new SinchCallListener());
+//            openCallerDialog(call);
+//        }
+//    }
     private void openCallerDialog(final com.sinch.android.rtc.calling.Call call){
         AlertDialog alertDialogCall = new AlertDialog.Builder(MessageActivity.this).create();
         alertDialogCall.setTitle("Alert");
@@ -676,63 +686,128 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private class SinchCallListener implements CallListener{
+//    private class SinchCallListener implements CallListener{
+//
+//        @Override
+//        public void onCallProgressing(com.sinch.android.rtc.calling.Call call) {
+//            System.out.println("LOOOOOG onCallProgressing");
+//            Toast.makeText(MessageActivity.this, "Call Progressing", Toast.LENGTH_SHORT).show();
+//
+//        }
+//
+//        @Override
+//        public void onCallEstablished(com.sinch.android.rtc.calling.Call call) {
+//            System.out.println("LOOOOOG onCallEstablished");
+//
+//            Toast.makeText(MessageActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
+//            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+//
+//        }
+//
+//        @Override
+//        public void onCallEnded(com.sinch.android.rtc.calling.Call endedcall) {
+//            System.out.println("LOOOOOG onCallEnded");
+//
+//            Toast.makeText(MessageActivity.this, "Call Ended", Toast.LENGTH_SHORT).show();
+//            call = null;
+//            endedcall.hangup();
+//            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+//
+//
+//
+//        }
+//
+//        @Override
+//        public void onShouldSendPushNotification(com.sinch.android.rtc.calling.Call call, List<PushPair> list) {
+//
+//        }
+//    }
+//    private class sinchCallClientListener implements CallClientListener {
+//
+//
+//
+//        @Override
+//        public void onIncomingCall(CallClient callClient, final com.sinch.android.rtc.calling.Call incomingCall) {
+//            System.out.println("LOOOOOG onIncomingCall");
+//            AlertDialog alertDialog = new AlertDialog.Builder(MessageActivity.this).create();
+//            alertDialog.setTitle("Calling");
+//            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "REJECT", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();
+//                    call.hangup();
+//                }
+//            });
+//
+//            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Pick", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    call = incomingCall;
+//                    call.answer();
+//                    call.addCallListener(new SinchCallListener());
+//                    Toast.makeText(getApplicationContext(), "Call is Started", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            });
+//            alertDialog.show();
+//
+//        }
+//    }
 
-        @Override
-        public void onCallProgressing(com.sinch.android.rtc.calling.Call call) {
-            Toast.makeText(MessageActivity.this, "Call Progressing", Toast.LENGTH_SHORT).show();
+    public interface StartFailedListener {
 
-        }
+        void onStartFailed(SinchError error);
 
-        @Override
-        public void onCallEstablished(com.sinch.android.rtc.calling.Call call) {
-            Toast.makeText(MessageActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCallEnded(com.sinch.android.rtc.calling.Call endedcall) {
-            Toast.makeText(MessageActivity.this, "Call Ended", Toast.LENGTH_SHORT).show();
-            call = null;
-            endedcall.hangup();
-            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-
-
-
-        }
-
-        @Override
-        public void onShouldSendPushNotification(com.sinch.android.rtc.calling.Call call, List<PushPair> list) {
-
-        }
+        void onStarted();
     }
-    private class sinchCallClientListener implements CallClientListener {
 
+//    private class MySinchClientListener implements SinchClientListener {
+//
+//        @Override
+//        public void onClientFailed(SinchClient client, SinchError error) {
+//            Log.d("LOOOOG", "onClientFailed "+error.getMessage());
+//            sinchClient.terminate();
+//            sinchClient = null;
+//        }
+//
+//        @Override
+//        public void onClientStarted(SinchClient client) {
+//            Log.d("LOOOOG", "SinchClient started");
+//            if (mListener != null) {
+//                mListener.onStarted();
+//            }
+//        }
+//
+//        @Override
+//        public void onClientStopped(SinchClient client) {
+//            Log.d("LOOOOG", "SinchClient stopped");
+//        }
+//
+//        @Override
+//        public void onLogMessage(int level, String area, String message) {
+//            switch (level) {
+//                case Log.DEBUG:
+//                    Log.d(area, message);
+//                    break;
+//                case Log.ERROR:
+//                    Log.e(area, message);
+//                    break;
+//                case Log.INFO:
+//                    Log.i(area, message);
+//                    break;
+//                case Log.VERBOSE:
+//                    Log.v(area, message);
+//                    break;
+//                case Log.WARN:
+//                    Log.w(area, message);
+//                    break;
+//            }
+//        }
+//
+//        @Override
+//        public void onRegistrationCredentialsRequired(SinchClient client, ClientRegistration clientRegistration) {
+//        }
+//    }
 
-        @Override
-        public void onIncomingCall(CallClient callClient, final com.sinch.android.rtc.calling.Call incomingcall) {
-            AlertDialog alertDialog = new AlertDialog.Builder(MessageActivity.this).create();
-            alertDialog.setTitle("Calling");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "REJECT", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    call.hangup();
-                }
-            });
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Pick", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    call = incomingcall;
-                    call.answer();
-                    call.addCallListener(new SinchCallListener());
-                    Toast.makeText(getApplicationContext(), "Call is Started", Toast.LENGTH_SHORT).show();
-
-                }
-            });
-            alertDialog.show();
-
-        }
-    }
 }
 
